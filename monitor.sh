@@ -40,3 +40,12 @@ check_ram() {
         print_warning "RAM usage is high: ${ram_usage}"
     fi
 }
+
+check_disk() {
+  local disk_usage
+  disk_usage=$(df / | awk 'NR==2{print $5}' | tr -d '%')
+  print_status "Disk usage: ${disk_usage}%"
+  if [ "${disk_usage}" -gt "${THRESHOLD}" ]; then
+    print_warning "Disk usage is high: ${disk_usage}%"
+  fi
+}
