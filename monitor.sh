@@ -20,6 +20,11 @@ print_error() {
     echo -e "${MAGENTA}[ERROR]${RESET} $1"
 }
 
-print_status "PIDORAS"
-print_warning "PIDORAS"
-print_error "PIDORAS"
+check_cpu() {
+    local cpu_usage
+    cpu_usage=$(top -bn1 | grep "Cpu(s)" | awk '{print $2}' | cut -d'.' -f1)
+    print_status "CPU usage: ${cpu_usage}%"
+    if [ "${cpu_usage}" -gt "${THRESHOLD}" ]; then
+        print_warning "CPU usage is high: ${cpu_usage}%"
+    fi
+}
