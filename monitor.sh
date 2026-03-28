@@ -2,6 +2,9 @@
 
 set -euo pipefail
 
+export LC_ALL=C
+export LANG=C
+
 CYAN='\033[0;36m'
 MAGENTA='\033[0;35m'
 YELLOW='\033[1;33m'
@@ -26,5 +29,14 @@ check_cpu() {
     print_status "CPU usage: ${cpu_usage}%"
     if [ "${cpu_usage}" -gt "${THRESHOLD}" ]; then
         print_warning "CPU usage is high: ${cpu_usage}%"
+    fi
+}
+
+check_ram() {
+    local ram_usage
+    ram_usage=$(free | awk '/^Mem:/{printf "%.0f", $3/$2*100}')
+    print_status "RAM usage: ${ram_usage}%"
+    if [ "${ram_usage}" -gt "${THRESHOLD}" ]; then
+        print_warning "RAM usage is high: ${ram_usage}"
     fi
 }
