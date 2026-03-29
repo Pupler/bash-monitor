@@ -64,3 +64,14 @@ check_network() {
   tx_speed=$(( (tx_after - tx_before) / 1024 ))
   print_status "Network (${interface}) — DOWN: ${rx_speed} KB/s UP: ${tx_speed} KB/s"
 }
+
+check_processes() {
+  local total hungry
+  total=$(ps aux | wc -l)
+  hungry=$(ps aux --sort=-%cpu | awk 'NR>1 && $3>50{print $11, $3"%"}' | head -5)
+  print_status "Total processes: ${total}"
+  if [ -n "${hungry}" ]; then
+    print_warning "High CPU processes:"
+    echo "${hungry}"
+  fi
+}
