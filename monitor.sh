@@ -49,3 +49,18 @@ check_disk() {
     print_warning "Disk usage is high: ${disk_usage}%"
   fi
 }
+
+check_network() {
+  local interface
+  interface=$(ip route | awk '/default/{print $5}' | head -1)
+  local rx_before tx_before rx_after tx_after
+  rx_before=$(cat /sys/class/net/"${interface}"/statistics/rx_bytes)
+  tx_before=$(cat /sys/class/net/"${interface}"/statistics/tx_bytes)
+  sleep 1
+  rx_after=$(cat /sys/class/net/"${interface}"/statistics/rx_bytes)
+  tx_after=$(cat /sys/class/net/"${interface}"/statistics/tx_bytes)
+  local rx_speed tx_speed
+  rx_speed=$(( (rx_after - rx_before) / 1024 ))
+  tx_speed=$(( (tx_after - tx_before) / 1024 ))
+  print_status "Network (${interface}) — DOWN: ${rx_speed} KB/s UP: ${tx_speed} KB/s"
+}
